@@ -1,0 +1,6 @@
+elasticsearch:
+  url: http://localhost:9200/operate-process-8.1.8_/_doc/{id}
+
+app:
+  folder: ./processes
+  partition: 1
