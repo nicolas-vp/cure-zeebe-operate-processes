@@ -5,13 +5,18 @@ elasticsearch:
   get-process-instance-count: 50
   get-process-instance: ${elasticsearch.url}/zeebe-record_process-instance_8.2.*/_search?size=${elasticsearch.get-process-instance-count}
   get-process-single-instance: ${elasticsearch.url}/zeebe-record-process-instance*/_search?q=value.processInstanceKey:{id}
+  get-flow-node-single: ${elasticsearch.url}/zeebe-record-process-instance*/_search?q=key:{id}
   create-list-view: ${elasticsearch.url}/operate-list-view-8.1.0_/_doc/{id}
   create-flow-node: ${elasticsearch.url}/operate-flownode-instance-8.2.0_/_doc/{id}
+
 
 app:
   folder: ./processes
   partition: 1
   import-process: false
   import-list-view: false
-  import-single-instance: true
+  import-single-instance: false
   import-single-instance-id: 333
+
+  import-single-flow-node: true
+  import-single-flow-node-id: 444
