@@ -1,6 +1,14 @@
+# &q=value.bpmnElementType:PROCESS
 elasticsearch:
-  url: http://localhost:9200/operate-process-8.1.8_/_doc/{id}
+  url: http://localhost:9200
+  create-process: ${elasticsearch.url}/operate-process-8.1.8_/_doc/{id}
+  get-process-instance-count: 50
+  get-process-instance: ${elasticsearch.url}/zeebe-record_process-instance_8.2.11_*/_search?size=${elasticsearch.get-process-instance-count}
+  create-list-view: ${elasticsearch.url}/operate-list-view-8.1.0_/_doc/{id}
+  create-flow-node: ${elasticsearch.url}/operate-flownode-instance-8.2.0_/_doc/{id}
 
 app:
   folder: ./processes
   partition: 1
+  import-process: false
+  import-list-view: true

@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -28,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+@ConditionalOnProperty(value = "app.import-process", havingValue = "true", matchIfMissing = false)
 @Service
 public class FlowNodeService {
     private static final Logger logger = LoggerFactory.getLogger(FlowNodeService.class);
@@ -38,7 +40,7 @@ public class FlowNodeService {
     @Value("${app.partition}")
     private Integer partition;
 
-    @Value("${elasticsearch.url}")
+    @Value("${elasticsearch.create-process}")
     private String elasticUrl;
 
     private final XmlMapper xmlMapper = initXmlMapper();

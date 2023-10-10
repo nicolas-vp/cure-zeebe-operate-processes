@@ -4,6 +4,8 @@
 
 Задача этого проекта извлечь процессы из Zeebe и передать их в elasticsearch в формате, понятном для Zeebe Operate.
 
+Так же, проект позволяет загрузить индекс list-view, заполнив его из данных zeebe-record_process-instance.
+
 ## Как Zeebe Operate хранит процессы
 
 В elasticsearch есть индекс, с названием
@@ -65,12 +67,21 @@ operate-process-<номер версии>_
 Пример application.yml
 ```yml
 elasticsearch:
-  url: http://localhost:9200/operate-process-8.1.8_/_doc/{id}
+  url: http://localhost:9200
+  create-process: ${elasticsearch.url}/operate-process-8.1.8_/_doc/{id}
+  get-process-instance-count: 50
+  get-process-instance: ${elasticsearch.url}/zeebe-record_process-instance_8.2.11_*/_search?size=${elasticsearch.get-process-instance-count}&q=value.bpmnElementType:PROCESS
+  create-list-view: ${elasticsearch.url}/operate-list-view-8.1.0_/_doc/{id}
 
 app:
   folder: ./processes
   partition: 1
+  import-process: false
+  import-list-view: true
 ```
+
+Настройка import-process определяет загружать ли процессы из папки processes.
+Настройка import-list-view управляет загружать ли индекс list-view из данных zeebe-record_process-instance.
 
 3. Собрать проект с помощью maven 
 ```bash
