@@ -46,7 +46,7 @@ public class ZeebeRecordProcessInstanceService {
     private RestTemplate restTemplate;
 
     public void checkListViewElement(QueryResultDto source) {
-        if (getProcessInstance(source.getId()) == null) {
+        if (source.getId() != null && getProcessInstance(source.getId()) == null) {
             createListViewItem(mapTargetListViewRelation(source));
         }
     }
