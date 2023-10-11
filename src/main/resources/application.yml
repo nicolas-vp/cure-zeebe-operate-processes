@@ -1,4 +1,3 @@
-# &q=value.bpmnElementType:PROCESS
 elasticsearch:
   url: http://localhost:9200
   create-process: ${elasticsearch.url}/operate-process-8.1.8_/_doc/{id}
@@ -9,14 +8,17 @@ elasticsearch:
   create-list-view: ${elasticsearch.url}/operate-list-view-8.1.0_/_doc/{id}
   create-flow-node: ${elasticsearch.url}/operate-flownode-instance-8.2.0_/_doc/{id}
 
-
 app:
-  folder: ./processes
   partition: 1
+  folder: ./processes
+# Доступно 4 процедуры, по-умолчанию выключено все, нужную процедуру нужно включить соответсвующей настройкой переводом в true
+# Процедура импорта процессов
   import-process: false
+# Процедура воссоздания всех ListView
   import-list-view: false
+# Процедура импортирования одного инстанса процесса (нужно указать его ID, например 2000000000000000)
   import-single-instance: false
-  import-single-instance-id: 333
-
-  import-single-flow-node: true
-  import-single-flow-node-id: 444
+  import-single-instance-id: 2000000000000000
+# Процедура импортирования одного элемента инстанса процесса (нужно указать его ID, например 3000000000000000)
+  import-single-flow-node: false
+  import-single-flow-node-id: 3000000000000000

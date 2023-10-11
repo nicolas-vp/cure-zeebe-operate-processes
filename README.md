@@ -1,10 +1,20 @@
 # Суть проблемы
 
-При нарушении работы Zeebe Operate могут быть не экспортированы модели процессов (process definition). Их уже может не быть в zeebe-records (сработал Curator), но они могут еще содержаться в самой Zeebe, во внутренней базе rockDb.
+При нарушении работы Zeebe Operate, потери части данных индексов Zeebe Operate нарушается работа процесса импортирования. 
+Проект позволяет воссоздать часть индексов Operate из доступных источников.
 
-Задача этого проекта извлечь процессы из Zeebe и передать их в elasticsearch в формате, понятном для Zeebe Operate.
+1. **operate-process-<версия>**
+Индекс содержит определения процессов (xml код процессов и путь прохождения процессов).
+Данный индекс можно извлечь напрямую из партиций Zeebe, а затем загрузить в индекс.
+Процессы содержаться во внутренней базе rockDb, с помощью утилиты zdb их можно извлечь, затем данный проект их может прочитать, обработать и передать их в elasticsearch в формате, понятном для Zeebe Operate.
 
-Так же, проект позволяет загрузить индекс list-view, заполнив его из данных zeebe-record_process-instance.
+2. **operate-list-view-<версия>**
+Индекс содержит запущенные и завершенные инстансы процесса для того, чтобы найти их в поиске.
+
+3. **operate-flownode-instance-<версия>**
+Индекс элементы инстанса процесса, которые были выполнены при его прохождении. Индекс используется при просмотре конкретного инстанса процесса.
+
+Индексы 2 и 3 заполняются при обработки записей из индекса zeebe-record_process-instance_<версия>_<дата>.
 
 ## Как Zeebe Operate хранит процессы
 
@@ -38,8 +48,9 @@ operate-process-<номер версии>_
 
 ## Что необходимо перед работой:
 
-* Java (минимум 17)
-* JQ - терминальный процессор json файлов
+* Java (минимум 17) (apt install openjdk-17-jre)
+* JQ - терминальный процессор json файлов (apt install jq)
+* Maven - если требуется пересобрать проект (apt install maven)
 
 ## Как применять
 
@@ -70,25 +81,61 @@ elasticsearch:
   url: http://localhost:9200
   create-process: ${elasticsearch.url}/operate-process-8.1.8_/_doc/{id}
   get-process-instance-count: 50
-  get-process-instance: ${elasticsearch.url}/zeebe-record_process-instance_8.2.11_*/_search?size=${elasticsearch.get-process-instance-count}&q=value.bpmnElementType:PROCESS
+  get-process-instance: ${elasticsearch.url}/zeebe-record_process-instance_8.2.*/_search?size=${elasticsearch.get-process-instance-count}
+  get-process-single-instance: ${elasticsearch.url}/zeebe-record-process-instance*/_search?q=value.processInstanceKey:{id}
+  get-flow-node-single: ${elasticsearch.url}/zeebe-record-process-instance*/_search?q=key:{id}
   create-list-view: ${elasticsearch.url}/operate-list-view-8.1.0_/_doc/{id}
+  create-flow-node: ${elasticsearch.url}/operate-flownode-instance-8.2.0_/_doc/{id}
 
 app:
-  folder: ./processes
   partition: 1
+  folder: ./processes
+  # Доступно 4 процедуры, по-умолчанию выключено все, нужную процедуру нужно включить соответсвующей настройкой переводом в true
+  # Процедура импорта процессов
   import-process: false
-  import-list-view: true
+  # Процедура воссоздания всех ListView
+  import-list-view: false
+  # Процедура импортирования одного инстанса процесса (нужно указать его ID, например 2000000000000000)
+  import-single-instance: false
+  import-single-instance-id: 2000000000000000
+  # Процедура импортирования одного элемента инстанса процесса (нужно указать его ID, например 3000000000000000)
+  import-single-flow-node: false
+  import-single-flow-node-id: 3000000000000000
 ```
-
-Настройка import-process определяет загружать ли процессы из папки processes.
-Настройка import-list-view управляет загружать ли индекс list-view из данных zeebe-record_process-instance.
 
 3. Собрать проект с помощью maven 
 ```bash
 mvn clean package
 ```
 
-4. и запустить java -jar
+4. Запустить java -jar
+
+4.1. Импортирование процессов
+
 ```bash
-java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar
+java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-process=true
+```
+
+4.2. Автоматическое воссоздание list-view и flownode-instance.
+
+Требуется задать количество записей по которым будет произведен поиск.
+
+```bash
+java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-list-view=true --elasticsearch.get-process-instance-count=100
+```
+
+4.3. Ипорт одного инстанса процесса
+
+Требуется задать идентификатор инстанса.
+
+```bash
+java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-single-instance=true --app.import-single-instance-id=2000000000000000
+```
+
+4.4. Импорт одного элемента инстанса процесса
+
+Требуется задать идентификатор элемента инстанса процесса.
+
+```bash
+java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-single-flow-node=true --app.import-single-flow-node-id=3000000000000000
 ```
