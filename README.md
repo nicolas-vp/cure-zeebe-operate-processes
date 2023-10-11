@@ -112,7 +112,7 @@ mvn clean package
 4.1. Импортирование процессов
 
 ```bash
-java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-process=true
+java -jar cure-zeebe-operate-processes-0.0.1.jar --app.import-process=true
 ```
 
 4.2. Автоматическое воссоздание list-view и flownode-instance.
@@ -120,7 +120,7 @@ java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-process=t
 Требуется задать количество записей по которым будет произведен поиск.
 
 ```bash
-java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-list-view=true --elasticsearch.get-process-instance-count=100
+java -jar cure-zeebe-operate-processes-0.0.1.jar --app.import-list-view=true --elasticsearch.get-process-instance-count=100
 ```
 
 4.3. Ипорт одного инстанса процесса
@@ -128,7 +128,7 @@ java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-list-view
 Требуется задать идентификатор инстанса.
 
 ```bash
-java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-single-instance=true --app.import-single-instance-id=2000000000000000
+java -jar cure-zeebe-operate-processes-0.0.1.jar --app.import-single-instance=true --app.import-single-instance-id=2000000000000000
 ```
 
 4.4. Импорт одного элемента инстанса процесса
@@ -136,5 +136,5 @@ java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-single-in
 Требуется задать идентификатор элемента инстанса процесса.
 
 ```bash
-java -jar ./target/cure-zeebe-operate-processes-0.0.1.jar --app.import-single-flow-node=true --app.import-single-flow-node-id=3000000000000000
+java -jar cure-zeebe-operate-processes-0.0.1.jar --app.import-single-flow-node=true --app.import-single-flow-node-id=3000000000000000
 ```
