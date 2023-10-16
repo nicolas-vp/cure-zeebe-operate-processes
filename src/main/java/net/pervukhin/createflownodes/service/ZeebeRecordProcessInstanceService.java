@@ -10,6 +10,7 @@ import net.pervukhin.createflownodes.dto.elasticquery.ListViewContainerDto;
 import net.pervukhin.createflownodes.dto.elasticquery.ListViewElementDto;
 import net.pervukhin.createflownodes.dto.elasticquery.ProcessContainerDto;
 import net.pervukhin.createflownodes.dto.elasticquery.QueryResultDto;
+import net.pervukhin.createflownodes.dto.elasticquery.ValueDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.Temporal;
 import java.util.TimeZone;
 
 @Service
@@ -64,6 +66,15 @@ public class ZeebeRecordProcessInstanceService {
                 log.info("Нужно создать пустой родительский инстанс {}", source.getValue().getParentProcessInstanceKey());
             }
         }
+    }
+
+    public void createBlankProcess(Long processInstanceKey) {
+        QueryResultDto queryResultDto = new QueryResultDto();
+        ValueDto valueDto = new ValueDto();
+        valueDto.setParentProcessInstanceKey(processInstanceKey);
+        queryResultDto.setValue(valueDto);
+        queryResultDto.setTimestamp(Instant.now().toEpochMilli());
+        createListViewItem(mapParentListViewNew(queryResultDto));
     }
 
     private ListViewElementDto getProcessInstance(Long processInstanceId) {

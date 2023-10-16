@@ -49,7 +49,8 @@ public class ImportSingleInstanceStarter {
             if (result.getHits().getHits().size() > 0) {
                 zeebeRecordProcessInstanceService.checkProcess(result.getHits().getHits().get(0).get_source());
             } else {
-                log.info("Elastiс вернул пустой массив");
+                log.info("Elastiс вернул пустой массив, будет создан процесс-заглушка");
+                zeebeRecordProcessInstanceService.createBlankProcess(id);
             }
         } else {
             log.info("Поиск был некорректным, проверьте url для поиска: {}", url);
