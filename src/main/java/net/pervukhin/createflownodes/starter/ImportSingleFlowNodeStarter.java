@@ -34,7 +34,8 @@ public class ImportSingleFlowNodeStarter {
             if (result.getHits().getHits().size() > 0) {
                 zeebeRecordProcessInstanceService.checkListViewElement(result.getHits().getHits().get(0).get_source());
             } else {
-                log.info("Elasiс вернул пустой массив");
+                log.info("Elasiс вернул пустой массив, будет создан элемент заглушка");
+                zeebeRecordProcessInstanceService.createBlankFlowNode(id);
             }
         } else {
             log.info("Поиск был некорректным, проверьте url для поиска: {}", url);

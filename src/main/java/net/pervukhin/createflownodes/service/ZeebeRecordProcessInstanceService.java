@@ -44,6 +44,9 @@ public class ZeebeRecordProcessInstanceService {
     @Value("${elasticsearch.create-process}")
     private String getProcessDefinition;
 
+    @Value("${app.import-single-instance-id}")
+    private Long singleInstanceId;
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -66,6 +69,18 @@ public class ZeebeRecordProcessInstanceService {
                 log.info("Нужно создать пустой родительский инстанс {}", source.getValue().getParentProcessInstanceKey());
             }
         }
+    }
+
+    public void createBlankFlowNode(Long flowNodeElementId) {
+        QueryResultDto source = new QueryResultDto();
+        source.setTimestamp(Instant.now().toEpochMilli());
+        source.setKey(flowNodeElementId);
+        ValueDto valueDto = new ValueDto();
+        valueDto.setProcessInstanceKey(singleInstanceId);
+        valueDto.setElementId("Activity_");
+        valueDto.setBpmnEventType("CALL_ACTIVITY");
+        source.setValue(valueDto);
+        createListViewItem(mapTargetListViewRelation(source));
     }
 
     public void createBlankProcess(Long processInstanceKey) {
