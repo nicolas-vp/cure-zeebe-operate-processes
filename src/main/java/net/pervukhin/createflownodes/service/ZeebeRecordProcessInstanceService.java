@@ -74,6 +74,10 @@ public class ZeebeRecordProcessInstanceService {
     }
 
     public void createBlankFlowNode(Long flowNodeElementId) {
+        createListViewItem(mapTargetListViewRelation(createBlankFlowNodeQueryResult(flowNodeElementId)));
+    }
+
+    public QueryResultDto createBlankFlowNodeQueryResult(Long flowNodeElementId) {
         QueryResultDto source = new QueryResultDto();
         source.setTimestamp(Instant.now().toEpochMilli());
         source.setKey(flowNodeElementId);
@@ -82,7 +86,7 @@ public class ZeebeRecordProcessInstanceService {
         valueDto.setElementId("Activity_");
         valueDto.setBpmnEventType("CALL_ACTIVITY");
         source.setValue(valueDto);
-        createListViewItem(mapTargetListViewRelation(source));
+        return source;
     }
 
     public void createBlankProcess(Long processInstanceKey) {
@@ -211,6 +215,11 @@ public class ZeebeRecordProcessInstanceService {
         target.setBpmnProcessId(source.getValue().getBpmnProcessId());
         target.setStartDate(parseDate(source.getTimestamp()));
         target.setState("ACTIVE");
+        if (source.getValue().getFlowScopeKey() != null && source.getValue().getFlowScopeKey() != -1L) {
+            target.setTreePath(source.getValue().getFlowScopeKey() + "/" + source.getKey());
+        } else {
+            target.setTreePath(source.getValue().getProcessInstanceKey() + "/" + source.getKey());
+        }
         target.setTreePath(source.getValue().getProcessInstanceKey() + "/" + source.getKey());
         target.setIncident(false);
         target.setProcessInstanceKey(instanceKey);

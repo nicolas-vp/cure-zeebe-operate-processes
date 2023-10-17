@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Slf4j
 @ConditionalOnProperty(value = "app.import-single-flow-node", havingValue = "true", matchIfMissing = false)
 @Service
@@ -26,6 +28,8 @@ public class ImportSingleFlowNodeStarter {
     @Autowired
     private ZeebeRecordProcessInstanceService zeebeRecordProcessInstanceService;
 
+    private static final List<String> NEW_INTENTS = List.of("ELEMENT_ACTIVATED");
+
     @PostConstruct
     public void init() {
         log.info("Импорт одно элемента инстанса: {}", id);
@@ -34,9 +38,19 @@ public class ImportSingleFlowNodeStarter {
             if (result.getHits().getHits().size() > 0) {
                 log.info("Нужный набор элементов найден");
                 zeebeRecordProcessInstanceService.checkListViewElement(result.getHits().getHits().get(0).get_source());
+                zeebeRecordProcessInstanceService.createFlowNodeInstance(
+                        NEW_INTENTS.contains(result.getHits().getHits().get(0).get_source().getIntent())
+                                ? zeebeRecordProcessInstanceService
+                                .mapTargetFlowNodeViewNew(result.getHits().getHits().get(0).get_source())
+                                : zeebeRecordProcessInstanceService
+                                        .mapTargetFlowNodeComplete(result.getHits().getHits().get(0).get_source()));
             } else {
                 log.info("Elasiс вернул пустой массив, будет создан элемент заглушка");
                 zeebeRecordProcessInstanceService.createBlankFlowNode(id);
+                zeebeRecordProcessInstanceService.createFlowNodeInstance(
+                        zeebeRecordProcessInstanceService
+                                .mapTargetFlowNodeViewNew(
+                                        zeebeRecordProcessInstanceService.createBlankFlowNodeQueryResult(id)));
             }
         } else {
             log.info("Поиск был некорректным, проверьте url для поиска: {}", url);
