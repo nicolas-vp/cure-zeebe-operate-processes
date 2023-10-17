@@ -51,10 +51,10 @@ public class ZeebeRecordProcessInstanceService {
     private RestTemplate restTemplate;
 
     public void checkListViewElement(QueryResultDto source) {
-        if (source.getId() != null && getProcessInstance(source.getId()) == null) {
+        if (source.getKey() != null && getProcessInstance(source.getKey()) == null) {
             createListViewItem(mapTargetListViewRelation(source));
         } else {
-            log.info("Получение ID было пустым");
+            log.info("Получение Key было пустым");
         }
     }
 
