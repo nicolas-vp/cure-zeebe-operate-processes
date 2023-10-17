@@ -20,5 +20,5 @@ app:
   import-single-instance: false
   import-single-instance-id: 2000000000000000
 # Процедура импортирования одного элемента инстанса процесса (нужно указать его ID, например 3000000000000000)
-  import-single-flow-node: true
+  import-single-flow-node: false
   import-single-flow-node-id: 3000000000000000
