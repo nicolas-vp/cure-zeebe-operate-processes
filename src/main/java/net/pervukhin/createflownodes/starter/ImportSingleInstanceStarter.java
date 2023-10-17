@@ -47,6 +47,7 @@ public class ImportSingleInstanceStarter {
         ResultContainerDto result = restTemplate.getForObject(url, ResultContainerDto.class, id);
         if (result != null && result.getHits() != null && result.getHits().getHits() != null) {
             if (result.getHits().getHits().size() > 0) {
+                log.info("Нужный набор элементов найден");
                 zeebeRecordProcessInstanceService.checkProcess(result.getHits().getHits().get(0).get_source());
             } else {
                 log.info("Elastiс вернул пустой массив, будет создан процесс-заглушка");

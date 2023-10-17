@@ -53,6 +53,8 @@ public class ZeebeRecordProcessInstanceService {
     public void checkListViewElement(QueryResultDto source) {
         if (source.getId() != null && getProcessInstance(source.getId()) == null) {
             createListViewItem(mapTargetListViewRelation(source));
+        } else {
+            log.info("Получение ID было пустым");
         }
     }
 
